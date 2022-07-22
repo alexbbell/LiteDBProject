@@ -1,5 +1,11 @@
-﻿using LiteDBProject.Data.LiteDB;
+﻿using LiteDBProject.Data;
+using LiteDBProject.Data.LiteDB;
+using LiteDBProject.Data.SQLite;
+using LiteDBProject.Interfaces;
+using LiteDBProject.Repository;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +16,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var provider = builder.Services.BuildServiceProvider();
-
-
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+builder.Services.AddDbContext<PremixContext>(options =>
+  options.UseSqlite(@"data source=c:\tools\SQLiteDBs\testdb.sqlite")); //'//"ConnectionStrings:SQLiteConnectionString")));
+
+builder.Services.AddScoped<IVitaminRepository, VitaminRepository>();
+builder.Services.AddScoped<IPremixRepository, PremixRepository>();
+
+
 //builder.Services.Configure<JsonOptions>(options =>
 //{
 //    options.SerializerOptions.Converters.Add(new NullableDateTimeConverter());
@@ -30,10 +42,10 @@ builder.Services.AddCors(options =>
 
 });
 
-var liteDBConnectionString = configuration["LiteDbOptions:LiteDBConnectionString"];
+//var liteDBConnectionString = configuration["LiteDbOptions:LiteDBConnectionString"];
 //builder.Services.AddScoped<IDbContext, LiteDbContext>();   
-builder.Services.AddScoped<IDbContext, LiteDbContext>();
-
+//builder.Services.AddScoped<IDbContext, LiteDbContext>();
+//builder.Services.AddScoped<IDbContext, PremixContext>();
 
 
 builder.Services.AddControllers();

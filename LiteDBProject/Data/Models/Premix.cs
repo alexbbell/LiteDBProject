@@ -1,46 +1,62 @@
 ﻿using LiteDB;
+using LiteDBProject.Data.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace LiteDBProject.Data
 {
+
+
+    [DataContract]
+    public class Vitamin //: VitaminPost
+    {
+        [Key]
+        [DataMember]
+        public int VitaminId { get; set; }
+        //public int vitaminId { get; set; }
+        [DataMember]
+        public string Title { get; set; }
+        [DataMember]
+        public string Rastvor { get; set; }
+        //Navigation properties
+        [DataMember]
+        public ICollection<PremixVitamin> PremixVitamins { get; set; }
+    }
+
+
+
     [DataContract]
     public class Premix
-    {
+    { 
         [DataMember]
-        [BsonField("_id")]
-        public int Id { get; set; }
+        //[BsonField("_id")]
+        [Key]
+        public int PremixId { get; set; }
         [BsonField("Name")]
         [DataMember]
-        public string title { get; set; }
-      
-        public string vid { get; set; }
-        [JsonIgnore]
-        public string age { get; set; }
-        [JsonIgnore] 
-        public string tu { get; set; }
-        [JsonIgnore]
-        public string developer { get; set; }
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        [DataMember]
+        public string Vid { get; set; }
+        [DataMember]
+        public string Age { get; set; }
+        [DataMember]
+        public string Tu { get; set; }
+        [DataMember]
+        public int DeveloperId { get; set; }
+        public Developer? Developer { get; set; }
 
-        [BsonRef("Vitamin")]
-        public List<Vitamin> vitamins { get; set; }
-
-        public Premix () { 
-            BsonMapper.Global.Entity<Premix>().DbRef(x=>x.vitamins, "Vitamin");
-        }
-
-    }
-    [DataContract]
-    public class Vitamin
-    {
-        [BsonField("_id")]
-        public int Id { get; set; }
-        [JsonIgnore]
-        public string title { get; set; }
-        [JsonIgnore]
-        public string rastvor { get; set; }
+        //Navigations Properties
+        public ICollection<PremixVitamin> PremixVitamins { get; set; }
 
     }
+
+
+  
+
+
 
 
 }

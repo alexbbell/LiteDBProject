@@ -1,9 +1,18 @@
-﻿namespace LiteDBProject.Data
+﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+
+namespace LiteDBProject.Data
 {
+    [DataContract]
     public class Developer
     {
-        public string name { get; set; }
-        public string devcode { get; set; }
-        public string country { get; set; }
+        [Key]
+        [DataMember]
+        public int DeveloperId { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public string Country { get; set; }
+
     }
 }
