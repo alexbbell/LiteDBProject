@@ -1,4 +1,5 @@
 ﻿using LiteDBProject.Data;
+using LiteDBProject.Data.Models;
 using LiteDBProject.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +45,7 @@ namespace LiteDBProject.Controllers
         // PUT: api/Vitamins/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVitamin(int id, Vitamin vitamin)
+        public async Task<IActionResult> PutVitamin(int id, VitaminDto vitamin)
         {
             if(vitamin == null) return BadRequest(ModelState);
 
@@ -57,9 +58,17 @@ namespace LiteDBProject.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            
 
-            if (!_vitaminRepository.UpdateVitamin(vitamin))
+
+            Vitamin v = new Vitamin()
+            {
+                Title = vitamin.VitaminTitle,
+                VitaminId = id,
+                Rastvor = vitamin.Rastvor
+
+            };
+
+            if (!_vitaminRepository.UpdateVitamin(v))
             {
                 ModelState.AddModelError("", "Something went wrong updating category");
                 return StatusCode(500, ModelState);
@@ -75,9 +84,9 @@ namespace LiteDBProject.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<Vitamin>> PostVitamin(Vitamin vitamin)
+        public async Task<ActionResult<Vitamin>> PostVitamin(VitaminDto vitamin)
         {
-            var vitaminExists = _vitaminRepository.GetVitamins().Where(v => v.Title.Trim().ToUpper() == vitamin.Title.ToUpper()).FirstOrDefault();
+            var vitaminExists = _vitaminRepository.GetVitamins().Where(v => v.Title.Trim().ToUpper() == vitamin.VitaminTitle.ToUpper()).FirstOrDefault();
 
             if(vitaminExists != null)
             {
@@ -88,7 +97,15 @@ namespace LiteDBProject.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if(!_vitaminRepository.CreateVitamin(vitamin))
+            Vitamin v = new Vitamin()
+            {
+                Title = vitamin.VitaminTitle,
+                VitaminId = vitamin.VitaminId,
+                Rastvor = vitamin.Rastvor
+
+            };
+
+            if(!_vitaminRepository.CreateVitamin(v))
             {
                 ModelState.AddModelError("", "something wrong on creating");
                 return StatusCode(500, ModelState);

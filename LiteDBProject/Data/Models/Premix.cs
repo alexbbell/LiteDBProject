@@ -8,23 +8,6 @@ namespace LiteDBProject.Data
 {
 
 
-    [DataContract]
-    public class Vitamin //: VitaminPost
-    {
-        [Key]
-        [DataMember]
-        public int VitaminId { get; set; }
-        //public int vitaminId { get; set; }
-        [DataMember]
-        public string Title { get; set; }
-        [DataMember]
-        public string Rastvor { get; set; }
-        //Navigation properties
-        [DataMember]
-        public ICollection<PremixVitamin> PremixVitamins { get; set; }
-    }
-
-
 
     [DataContract]
     public class Premix

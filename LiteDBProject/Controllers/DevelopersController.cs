@@ -55,12 +55,18 @@ namespace LiteDBProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDeveloper(int id, Developer developer)
         {
-            if (id != developer.DeveloperId)
+            //if (id != developer.DeveloperId)
+            //{
+            //    return BadRequest();
+            //}
+            Developer d = new Developer()
             {
-                return BadRequest();
-            }
-
-            _context.Entry(developer).State = EntityState.Modified;
+                DeveloperId = id,
+                Name = developer.Name,
+                Country = developer.Country
+            };
+            //_context.Entry(developer).State = EntityState.Modified;
+            _context.Developers.Update(d);
 
             try
             {
@@ -112,7 +118,7 @@ namespace LiteDBProject.Controllers
 
         // DELETE: api/Developers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDeveloper(string id)
+        public async Task<IActionResult> DeleteDeveloper(int id)
         {
             if (_context.Developers == null)
             {

@@ -14,7 +14,7 @@ namespace LiteDBProject.Repository
         {
             _context = context;
         }
-        public bool CreatePremix(List<int> vitamins, Premix premix)
+        public bool CreatePremix( Premix premix)
         {
             //var vitaminsInPremix = _context.Vitamins.Where(v=>v.VitaminId.Equals(premix.PremixVitamins)).ToList();
 
@@ -26,17 +26,20 @@ namespace LiteDBProject.Repository
             //};
 
             _context.Add(premix);
-            _context.SaveChanges();
+            //_context.SaveChanges();
 
-            ICollection<PremixVitamin> premixVitamins = new List<PremixVitamin>();
-            foreach(var vitamin in vitamins) 
-            {
-                premixVitamins.Add(new PremixVitamin { PremixId = premix.PremixId, VitaminId = vitamin });
-            }
+            //ICollection<PremixVitamin> premixVitamins = new List<PremixVitamin>();
+            //if (premix.PremixVitamins != null)
+            //{
+            //    foreach (var vitamin in premix.PremixVitamins)
+            //    {
+            //        premixVitamins.Add(new PremixVitamin { PremixId = premix.PremixId, VitaminId = vitamin.VitaminId });
+            //    }
+            //    _context.AddRange(premixVitamins);
+            //    _context.SaveChanges();
 
+            //}
 
-            _context.AddRange(premixVitamins);
-            _context.SaveChanges();
 
 
             return Save();
@@ -50,7 +53,7 @@ namespace LiteDBProject.Repository
 
         public PremixDto GetPremix(int id)
         {
-            
+
 
             var premix_forForm = _context.Premixes.Where(p => p.PremixId == id).Select(premix => new PremixDto()
             {
@@ -61,7 +64,15 @@ namespace LiteDBProject.Repository
                 Title = premix.Title,
                 Vid = premix.Vid,
                 Tu = premix.Tu
-                ,                Vitamins = premix.PremixVitamins.Select(pv => pv.Vitamin.Title).ToList()
+                //,                Vitamins = premix.PremixVitamins.Select(pv => pv.Vitamin.Title).ToList()
+                ,
+                Vitamins = premix.PremixVitamins.Select(
+                    pv => new VitaminJS
+                    {
+                         VitaminId = pv.VitaminId,
+                         VitaminTitle =pv.Vitamin.Title
+                    }                    
+                ).ToList()
                 //Where(pv => pv.PremixId == id).
             }).FirstOrDefault();
             return premix_forForm;
@@ -85,9 +96,21 @@ namespace LiteDBProject.Repository
             return saved > 0 ? true : false;
         }
 
-        public bool UpdatePremix(Premix premix)
+        public bool UpdatePremix(int premixId, Premix updatePremix)
         {
-            throw new NotImplementedException();
+            var _premix = _context.Premixes.FirstOrDefault(p => p.PremixId == premixId);
+            if(_premix != null)
+            {
+                _premix.Title = updatePremix.Title;
+                _premix.Age = updatePremix.Age;
+                _premix.Tu = updatePremix.Tu;
+                _premix.Vid = updatePremix.Vid;
+                _premix.DeveloperId = updatePremix.DeveloperId;
+                _premix.PremixVitamins = updatePremix.PremixVitamins;
+            }
+             _context.Update(_premix);
+            return Save();
+            //throw new NotImplementedException();
         }
     }
 }

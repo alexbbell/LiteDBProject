@@ -1,4 +1,5 @@
 ﻿using LiteDBProject.Data;
+using LiteDBProject.Data.Models;
 
 namespace LiteDBProject.Interfaces
 {

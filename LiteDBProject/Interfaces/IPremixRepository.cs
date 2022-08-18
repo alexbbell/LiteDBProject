@@ -7,8 +7,8 @@ namespace LiteDBProject.Interfaces
         ICollection<Premix> GetPremixes();
         PremixDto GetPremix(int id);
         bool PremixExists(int id);
-        bool CreatePremix(List<int> vitamins, Premix premix);
-        bool UpdatePremix(Premix premix);
+        bool CreatePremix( Premix premix);
+        bool UpdatePremix(int premixId, Premix premix);
         bool DeletePremix(Premix premix);
         bool Save();
 

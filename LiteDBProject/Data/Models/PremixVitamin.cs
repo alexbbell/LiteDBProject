@@ -7,6 +7,7 @@ namespace LiteDBProject.Data.Models
         [Key]
         public int Id { get; set; }
         public int PremixId { get; set; }
+        
         public Premix Premix { get; set; }
 
         public int VitaminId { get; set; }

@@ -1,4 +1,5 @@
 ﻿using LiteDBProject.Data;
+using LiteDBProject.Data.Models;
 using LiteDBProject.Data.SQLite;
 using LiteDBProject.Interfaces;
 using LiteDBProject.Repository;
@@ -28,7 +29,7 @@ namespace LiteDBProject.Controllers
           {
               return NotFound();
           }
-            return Ok (_premixRepository.GetPremixes());
+            return Ok (_premixRepository.GetPremixes().OrderByDescending(p=>p.PremixId));
         }
 
         // GET: api/Premixes/5
@@ -49,42 +50,67 @@ namespace LiteDBProject.Controllers
         // PUT: api/Premixes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPremix(int premixId, Premix premix)
+        public async Task<IActionResult> PutPremix(int premixId, PremixDto premixUpdate)
         {
 
             if(!_premixRepository.PremixExists(premixId)) return NotFound();
 
-            if (premixId != premix.PremixId)  return BadRequest();
+            if (premixId != premixUpdate.PremixId)  return BadRequest();
 
             if (!ModelState.IsValid) return BadRequest();
-     
-            
-            _premixRepository.UpdatePremix(premix);
-  
-            return NoContent();
+
+            Premix premix = new Premix()
+            {
+                PremixId = premixId,
+                Title = premixUpdate.Title,
+                Age = premixUpdate.Age,
+                Tu = premixUpdate.Tu,
+                Vid = premixUpdate.Vid,
+                DeveloperId = premixUpdate.DeveloperId
+            };
+
+
+            if (premixUpdate.Vitamins != null)
+            {
+                //Добоавить проверку, если витамины уже есть в таблице
+                premix.PremixVitamins = new List<PremixVitamin>();
+                foreach (var vitamin in premixUpdate.Vitamins)
+                {
+                    premix.PremixVitamins.Add(new PremixVitamin { PremixId = premixUpdate.PremixId, VitaminId = vitamin.VitaminId });
+                }
+            }
+
+            bool isUpdated = _premixRepository.UpdatePremix(premixId, premix);
+ 
+
+            return Ok(isUpdated);
         }
 
         // POST: api/Premixes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //        public async Task<ActionResult<Premix>> PostPremix(PremixDto premixDto)
-        public async Task<ActionResult<Premix>> PostPremix(int developerId, string vitamins, PremixDto premixCreate)
+        public async Task<ActionResult<Premix>> PostPremix(PremixDto premixCreate)
         {
             List<int> vitaminIds = new List<int>();
-            if(vitamins != String.Empty)
-            {
-                vitaminIds.AddRange(vitamins.Split(',').Select(Int32.Parse).ToList());
-            }
             Premix premix = new Premix() { 
                 Title = premixCreate.Title,
                 Age = premixCreate.Age,
                 Tu = premixCreate.Tu,
                 Vid = premixCreate.Vid,
-                DeveloperId = developerId
-                 
+                DeveloperId = premixCreate.DeveloperId               
             };
 
-            _premixRepository.CreatePremix(vitaminIds, premix);
+
+            if (premixCreate.Vitamins != null)
+            {
+                premix.PremixVitamins = new List<PremixVitamin>();
+                foreach (var vitamin in premixCreate.Vitamins)
+                {
+                    premix.PremixVitamins.Add(new PremixVitamin { PremixId = premixCreate.PremixId, VitaminId = vitamin.VitaminId});
+                }
+            }
+
+            _premixRepository.CreatePremix( premix);
 
             return CreatedAtAction("GetPremix", new { id = premixCreate.PremixId }, premixCreate);
         }
@@ -93,7 +119,11 @@ namespace LiteDBProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePremix(int id)
         {
-          
+            if (!_premixRepository.PremixExists(id)) return NotFound();
+
+            var premix = _premixRepository.GetPremix(id);
+            Premix pr = new Premix() { PremixId = premix.PremixId };
+            _premixRepository.DeletePremix(pr);
 
             return NoContent();
         }

@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using LiteDBProject.Data.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -7,17 +8,6 @@ namespace LiteDBProject.Data
 {
 
 
-    [DataContract]
-    public class VitaminDto //: VitaminPost
-    {
-
-        public int vitaminId { get; set; }
-        //public int vitaminId { get; set; }
-        [DataMember]
-        public string title { get; set; }
-        [DataMember]
-        public string rastvor { get; set; }        
-    }
 
     [DataContract]
     public class DeveloperDto
@@ -47,7 +37,7 @@ namespace LiteDBProject.Data
         [DataMember]
         public string DeveloperName { get; set; }
         [DataMember]
-        public List<string> Vitamins { get; set; }
+        public List<VitaminJS> Vitamins { get; set; }
 
         //[BsonRef("Vitamin")]
         
